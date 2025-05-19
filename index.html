@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Powerplay Clash | Play & Win</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Cricket Kingdom - Free Fire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
         :root {
-            --primary: #3a86ff;
-            --secondary: #8338ec;
-            --accent: #ff006e;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
+            --primary: #FF6B00;
+            --secondary: #FFA800;
+            --dark: #1A1A1A;
+            --light: #F5F5F5;
+            --success: #28A745;
+            --danger: #DC3545;
+            --info: #17A2B8;
         }
         
         * {
@@ -27,9 +29,9 @@
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #1A1A1A, #2D2D2D);
+            color: white;
             min-height: 100vh;
-            color: var(--dark);
             overflow-x: hidden;
         }
         
@@ -39,142 +41,135 @@
             padding: 20px;
         }
         
-        /* Auth Modal */
-        .auth-modal {
-            position: fixed;
+        /* Auth Screen */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+        
+        .auth-screen::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
+            background: rgba(0, 0, 0, 0.7);
         }
         
-        .auth-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
+        .auth-container {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
             max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transform: translateY(-20px);
-            animation: slideUp 0.3s ease forwards;
+            z-index: 1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-in-out;
         }
         
-        .auth-header {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
         
-        .auth-header h2 {
+        .logo img {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+        }
+        
+        .logo h1 {
             color: var(--primary);
-            font-size: 28px;
-            margin-bottom: 10px;
+            margin-top: 10px;
+            font-size: 24px;
         }
         
-        .auth-header p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .auth-form .form-group {
+        .form-group {
             margin-bottom: 20px;
         }
         
-        .auth-form label {
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
+            color: var(--light);
         }
         
-        .auth-form input {
+        .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             font-size: 16px;
             transition: all 0.3s;
         }
         
-        .auth-form input:focus {
-            border-color: var(--primary);
+        .form-control:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.3);
         }
         
-        .auth-form button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-align: center;
+            width: 100%;
         }
         
-        .auth-form button:hover {
-            background: #2a75e6;
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
         }
         
-        /* Main Layout */
-        .app-header {
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+        
+        /* Main Game Screen */
+        .game-screen {
+            display: none;
+        }
+        
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo img {
-            height: 40px;
-        }
-        
-        .logo h1 {
-            font-size: 24px;
-            color: var(--primary);
-            font-weight: 700;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-        
-        .diamond-balance {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(58, 134, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .diamond-balance i {
-            color: var(--primary);
         }
         
         .avatar {
@@ -182,2994 +177,1407 @@
             height: 40px;
             border-radius: 50%;
             background: var(--primary);
-            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-right: 10px;
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .username {
             font-weight: 600;
+        }
+        
+        .diamonds {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 168, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .diamonds i {
+            color: var(--secondary);
+            margin-right: 5px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-tabs li {
+            padding: 10px 20px;
             cursor: pointer;
-            transition: all 0.3s;
             position: relative;
         }
         
-        .avatar:hover {
-            transform: scale(1.1);
+        .nav-tabs li.active {
+            color: var(--primary);
         }
         
-        .user-menu {
+        .nav-tabs li.active::after {
+            content: '';
             position: absolute;
-            top: 50px;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            width: 200px;
-            overflow: hidden;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .tab-content {
             display: none;
-            z-index: 100;
         }
         
-        .avatar:hover .user-menu {
+        .tab-content.active {
             display: block;
+            animation: fadeIn 0.5s ease-in-out;
         }
         
-        .user-menu-item {
-            padding: 12px 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .user-menu-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .user-menu-item i {
-            width: 20px;
+        /* Lobby */
+        .lobby {
             text-align: center;
         }
         
-        .main-content {
-            display: flex;
-            min-height: calc(100vh - 80px);
+        .play-btn {
+            margin: 30px auto;
+            max-width: 300px;
+            font-size: 18px;
+            padding: 15px;
         }
         
-        .sidebar {
-            width: 250px;
-            background: white;
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             padding: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-        }
-        
-        .nav-menu {
-            list-style: none;
             margin-top: 30px;
         }
         
-        .nav-item {
+        .leaderboard h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.03);
             margin-bottom: 10px;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: #555;
-            text-decoration: none;
-            font-weight: 500;
+            border-radius: 5px;
             transition: all 0.3s;
         }
         
-        .nav-link i {
-            width: 20px;
-            text-align: center;
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
         
-        .nav-link:hover, .nav-link.active {
-            background: rgba(58, 134, 255, 0.1);
-            color: var(--primary);
+        .leaderboard-item .rank {
+            font-weight: bold;
+            color: var(--secondary);
         }
         
-        .content-area {
-            flex: 1;
-            padding: 20px;
-            background: #f8f9fa;
-        }
-        
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        
-        .page-header h2 {
-            font-size: 24px;
-            color: var(--dark);
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #2a75e6;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
-        }
-        
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #7229d6;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(131, 56, 236, 0.3);
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-        }
-        
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            color: white;
-        }
-        
-        .card-icon.blue {
-            background: var(--primary);
-        }
-        
-        .card-icon.purple {
-            background: var(--secondary);
-        }
-        
-        .card-icon.red {
-            background: var(--accent);
-        }
-        
-        .card-title {
-            font-size: 14px;
-            color: #777;
-            font-weight: 500;
-        }
-        
-        .card-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-        
-        /* Leaderboard */
-        .leaderboard {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .leaderboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .leaderboard-tabs {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .tab-btn {
-            padding: 8px 15px;
-            border-radius: 8px;
-            background: #f1f1f1;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .leaderboard-table th {
+        .leaderboard-item .name {
+            flex-grow: 1;
             text-align: left;
-            padding: 12px 15px;
-            background: #f8f9fa;
-            color: #555;
-            font-weight: 600;
+            padding-left: 20px;
         }
         
-        .leaderboard-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .leaderboard-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .leaderboard-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .rank {
-            display: inline-block;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: #f1f1f1;
-            text-align: center;
-            line-height: 25px;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        .rank-1 {
-            background: #ffd700;
-            color: white;
-        }
-        
-        .rank-2 {
-            background: #c0c0c0;
-            color: white;
-        }
-        
-        .rank-3 {
-            background: #cd7f32;
-            color: white;
-        }
-        
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        /* Team Management */
-        .team-section {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .team-cards {
-            flex: 2;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .team-stats {
-            flex: 1;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .team-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-        
-        .team-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        
-        .player-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            border: 2px solid #eee;
-            position: relative;
-        }
-        
-        .player-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-color: var(--primary);
-        }
-        
-        .player-card.selected {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.3);
-        }
-        
-        .player-image {
-            height: 120px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            color: #666;
-        }
-        
-        .player-details {
-            padding: 12px;
-        }
-        
-        .player-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .player-rating {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .player-rating-value {
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .player-actions {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            display: flex;
-            gap: 5px;
-        }
-        
-        .player-btn {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: white;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        
-        .player-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .player-btn.add {
-            background: var(--success);
-            color: white;
-        }
-        
-        .player-btn.remove {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .team-rating {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .team-rating-value {
-            font-size: 48px;
-            font-weight: 700;
-            color: var(--primary);
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-        
-        .team-rating-label {
-            font-size: 14px;
-            color: #777;
-        }
-        
-        .team-stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .stat-item {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #777;
-        }
-        
-        /* Store */
-        .store-filters {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .filter-select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 2px solid #ddd;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .pack-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .pack-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .pack-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .pack-header {
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-        
-        .pack-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .pack-rarity {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        
-        .pack-body {
-            padding: 15px;
-        }
-        
-        .pack-price {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        .pack-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .pack-btn:hover {
-            background: #2a75e6;
-        }
-        
-        .pack-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .leaderboard-item .score {
+            font-weight: bold;
         }
         
         /* Matchmaking */
-        .matchmaking-container {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        .matchmaking {
             text-align: center;
-            max-width: 500px;
-            margin: 0 auto;
+            padding: 40px 20px;
+            display: none;
         }
         
-        .matchmaking-icon {
-            font-size: 60px;
+        .matchmaking-status {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
             color: var(--primary);
-            margin-bottom: 20px;
-            animation: pulse 1.5s infinite;
+            margin: 20px 0;
         }
         
-        .matchmaking-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-        
-        .matchmaking-text {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        .matchmaking-progress {
-            height: 8px;
-            background: #f1f1f1;
-            border-radius: 4px;
-            margin-bottom: 30px;
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 30px auto;
+            max-width: 400px;
             overflow: hidden;
         }
         
-        .matchmaking-progress-bar {
+        .progress {
             height: 100%;
-            background: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             width: 0%;
             transition: width 0.3s;
         }
         
-        .matchmaking-timer {
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 20px;
-        }
-        
-        /* Match Screen */
-        .match-container {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .match-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .match-teams {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .team-flag {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            color: var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: 600;
-        }
-        
-        .vs {
-            font-weight: 700;
-            font-size: 18px;
+        /* Gameplay */
+        .gameplay {
+            display: none;
         }
         
         .match-info {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-        
-        .match-body {
-            padding: 20px;
-        }
-        
-        .scoreboard {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
+            border-radius: 10px;
         }
         
-        .scoreboard-team {
+        .team {
+            display: flex;
+            align-items: center;
+        }
+        
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--dark);
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .vs {
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0 20px;
+        }
+        
+        .scoreboard {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .scoreboard-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .current-batsman, .current-bowler {
+            display: flex;
+            align-items: center;
+        }
+        
+        .player-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--secondary);
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .score-display {
             text-align: center;
-            flex: 1;
+            margin: 20px 0;
         }
         
-        .scoreboard-team-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .scoreboard-score {
-            font-size: 24px;
-            font-weight: 700;
+        .runs {
+            font-size: 48px;
+            font-weight: bold;
             color: var(--primary);
         }
         
-        .scoreboard-overs {
-            font-size: 14px;
-            color: #777;
+        .overs {
+            font-size: 18px;
+            color: var(--secondary);
         }
         
-        .match-status {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .match-actions {
+        .action-buttons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
+            margin-top: 30px;
         }
         
         .action-btn {
-            padding: 12px;
-            border-radius: 8px;
-            background: #f1f1f1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            font-weight: 500;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .action-btn i {
-            font-size: 20px;
         }
         
         .action-btn:hover {
-            background: #e1e1e1;
+            background: rgba(255, 107, 0, 0.3);
+            transform: translateY(-2px);
         }
         
         .action-btn.selected {
             background: var(--primary);
-            color: white;
+            box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
         }
         
-        .match-timer {
+        .timer {
             text-align: center;
-            font-size: 14px;
-            color: #777;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--secondary);
         }
         
-        .match-commentary {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            max-height: 200px;
-            overflow-y: auto;
+        /* Team Management */
+        .team-management {
+            padding: 20px;
         }
         
-        .commentary-item {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .commentary-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-        
-        .commentary-text {
-            font-size: 14px;
-        }
-        
-        .commentary-time {
-            font-size: 12px;
-            color: #777;
-            margin-top: 5px;
-        }
-        
-        /* Events */
-        .events-container {
+        .team-squad {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         
-        .event-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .event-header {
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             padding: 15px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         
-        .event-title {
-            font-weight: 600;
+        .player-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .player-card.selected {
+            border: 2px solid var(--primary);
+        }
+        
+        .player-card .player-avatar {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
             font-size: 18px;
         }
         
-        .event-time {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        
-        .event-body {
-            padding: 15px;
-        }
-        
-        .event-description {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        .event-progress {
-            margin-bottom: 15px;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: #f1f1f1;
-            border-radius: 4px;
-            overflow: hidden;
+        .player-name {
+            text-align: center;
+            font-weight: 600;
             margin-bottom: 5px;
         }
         
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-        }
-        
-        .progress-text {
-            font-size: 12px;
-            color: #777;
+        .player-stats {
             display: flex;
             justify-content: space-between;
-        }
-        
-        .event-rewards {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .reward-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(58, 134, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 20px;
             font-size: 12px;
-            color: var(--primary);
-            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
         }
         
-        .event-btn {
+        .player-rating {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        /* Store */
+        .store {
+            padding: 20px;
+        }
+        
+        .store-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .store-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .store-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .store-item img {
             width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .item-price {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--secondary);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .item-price i {
+            margin-right: 5px;
+        }
+        
+        /* Toss Screen */
+        .toss-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .toss-result {
+            font-size: 24px;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+        
+        .toss-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .toss-option {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .event-btn.claim {
-            background: var(--success);
-            color: white;
-        }
-        
-        .event-btn.claim:hover {
-            background: #218838;
-        }
-        
-        .event-btn.locked {
-            background: #f1f1f1;
-            color: #999;
-            cursor: not-allowed;
+        .toss-option:hover {
+            background: rgba(255, 107, 0, 0.3);
         }
         
         /* Notifications */
-        .notifications-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-        
-        .notification-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            transform: translateX(150%);
+            transition: transform 0.3s ease-in-out;
         }
         
-        .notification-item:last-child {
-            border-bottom: none;
+        .notification.show {
+            transform: translateX(0);
         }
         
-        .notification-icon {
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .notification.warning {
+            background: var(--secondary);
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
             width: 40px;
             height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            background: rgba(58, 134, 255, 0.1);
-            color: var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
+            border-top: 4px solid var(--primary);
+            animation: spin 1s linear infinite;
         }
         
-        .notification-content {
-            flex: 1;
-        }
-        
-        .notification-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .notification-text {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .notification-time {
-            font-size: 12px;
-            color: #999;
-        }
-        
-        /* Ban Modal */
-        .ban-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .ban-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .ban-icon {
-            font-size: 60px;
-            color: var(--danger);
-            margin-bottom: 20px;
-        }
-        
-        .ban-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--danger);
-        }
-        
-        .ban-message {
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
+            .auth-container {
+                padding: 30px 20px;
+                max-width: 90%;
             }
             
-            .sidebar {
-                width: 100%;
-                padding: 15px;
-            }
-            
-            .team-section {
-                flex-direction: column;
-            }
-            
-            .match-actions {
+            .action-buttons {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .user-menu {
-                right: -50px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .auth-content {
-                padding: 20px;
+            .team-squad, .store-items {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
             
-            .app-header {
-                padding: 10px 15px;
-            }
-            
-            .logo h1 {
-                font-size: 20px;
-            }
-            
-            .user-info {
+            .toss-options {
+                flex-direction: column;
                 gap: 10px;
-            }
-            
-            .diamond-balance {
-                padding: 5px 8px;
-                font-size: 14px;
-            }
-            
-            .avatar {
-                width: 35px;
-                height: 35px;
-                font-size: 14px;
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .match-actions {
-                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-content">
-            <div class="auth-header">
-                <h2>Welcome to Powerplay Clash</h2>
-                <p>Enter your username to start playing</p>
-            </div>
-            <form class="auth-form" id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" required>
-                </div>
-                <button type="submit">Play Now</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Ban Modal -->
-    <div class="ban-modal" id="banModal">
-        <div class="ban-content">
-            <div class="ban-icon">
-                <i class="fas fa-ban"></i>
-            </div>
-            <h2 class="ban-title">Account Banned</h2>
-            <p class="ban-message" id="banMessage">Your account has been suspended for violating our terms of service.</p>
-            <button class="btn btn-danger" id="banCloseBtn">Close</button>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div class="app-container" id="appContainer" style="display: none;">
-        <header class="app-header">
+    <!-- Auth Screen -->
+    <div class="auth-screen">
+        <div class="auth-container">
             <div class="logo">
-                <span>🏏</span>
-                <h1>Powerplay Clash</h1>
+                <img src="https://images.unsplash.com/photo-1601662528567-526cd06f6582?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Cricket Kingdom">
+                <h1>Cricket Kingdom</h1>
             </div>
-            <div class="user-info">
-                <div class="diamond-balance">
-                    <i class="fas fa-gem"></i>
-                    <span id="diamondBalance">0</span>
-                </div>
-                <div class="avatar" id="userAvatar">
-                    U
-                    <div class="user-menu">
-                        <div class="user-menu-item" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter your username (3-15 chars)" maxlength="15">
             </div>
-        </header>
-
-        <div class="main-content">
-            <aside class="sidebar">
-                <nav>
-                    <ul class="nav-menu">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active" data-page="dashboard">
-                                <i class="fas fa-home"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-page="team">
-                                <i class="fas fa-users"></i>
-                                <span>My Team</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-page="leaderboard">
-                                <i class="fas fa-trophy"></i>
-                                <span>Leaderboard</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-page="store">
-                                <i class="fas fa-shopping-bag"></i>
-                                <span>Store</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-page="events">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>Events</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-page="notifications">
-                                <i class="fas fa-bell"></i>
-                                <span>Notifications</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
-
-            <main class="content-area">
-                <!-- Dashboard Page -->
-                <div class="page" id="dashboardPage">
-                    <div class="page-header">
-                        <h2>Dashboard</h2>
-                        <button class="btn btn-primary" id="playNowBtn">Play Now</button>
-                    </div>
-
-                    <div class="dashboard-cards">
-                        <div class="card">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">Team Rating</div>
-                                    <div class="card-value" id="teamRatingValue">0</div>
-                                </div>
-                                <div class="card-icon blue">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">Matches Played</div>
-                                    <div class="card-value" id="matchesPlayed">0</div>
-                                </div>
-                                <div class="card-icon purple">
-                                    <i class="fas fa-gamepad"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <div>
-                                    <div class="card-title">Highest Score</div>
-                                    <div class="card-value" id="highestScore">0</div>
-                                </div>
-                                <div class="card-icon red">
-                                    <i class="fas fa-bolt"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="leaderboard">
-                        <div class="leaderboard-header">
-                            <h3>Global Leaderboard</h3>
-                            <div class="leaderboard-tabs">
-                                <button class="tab-btn active" data-tab="global">Global</button>
-                                <button class="tab-btn" data-tab="friends">Friends</button>
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="leaderboard-table">
-                                <thead>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Player</th>
-                                        <th>Rating</th>
-                                        <th>Matches</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leaderboardBody">
-                                    <!-- Leaderboard data will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Team Management Page -->
-                <div class="page" id="teamPage" style="display: none;">
-                    <div class="page-header">
-                        <h2>My Team</h2>
-                        <button class="btn btn-primary" id="saveTeamBtn">Save Team</button>
-                    </div>
-
-                    <div class="team-section">
-                        <div class="team-cards">
-                            <h3 class="team-title">Selected Players</h3>
-                            <div class="team-cards-grid" id="selectedPlayersGrid">
-                                <!-- Selected players will be populated here -->
-                                <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
-                                    <i class="fas fa-users" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                                    <p>No players selected. Add players from the store to build your team.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="team-stats">
-                            <div class="team-rating">
-                                <div class="team-rating-value" id="teamRatingBig">0</div>
-                                <div class="team-rating-label">Team Rating</div>
-                            </div>
-                            <div class="team-stats-grid">
-                                <div class="stat-item">
-                                    <div class="stat-value" id="battingStat">0</div>
-                                    <div class="stat-label">Batting</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="bowlingStat">0</div>
-                                    <div class="stat-label">Bowling</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="fieldingStat">0</div>
-                                    <div class="stat-label">Fielding</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="fitnessStat">0</div>
-                                    <div class="stat-label">Fitness</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Leaderboard Page -->
-                <div class="page" id="leaderboardPage" style="display: none;">
-                    <div class="page-header">
-                        <h2>Leaderboard</h2>
-                    </div>
-
-                    <div class="leaderboard">
-                        <div class="leaderboard-header">
-                            <h3>Top Players</h3>
-                            <div class="leaderboard-tabs">
-                                <button class="tab-btn active" data-tab="global">Global</button>
-                                <button class="tab-btn" data-tab="friends">Friends</button>
-                            </div>
-                        </div>
-                        <div class="table-container">
-                            <table class="leaderboard-table">
-                                <thead>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Player</th>
-                                        <th>Rating</th>
-                                        <th>Matches</th>
-                                        <th>Win %</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="fullLeaderboardBody">
-                                    <!-- Leaderboard data will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Store Page -->
-                <div class="page" id="storePage" style="display: none;">
-                    <div class="page-header">
-                        <h2>Player Store</h2>
-                    </div>
-
-                    <div class="store-filters">
-                        <div class="filter-group">
-                            <select class="filter-select" id="rarityFilter">
-                                <option value="all">All Rarities</option>
-                                <option value="common">Common</option>
-                                <option value="rare">Rare</option>
-                                <option value="epic">Epic</option>
-                                <option value="legendary">Legendary</option>
-                            </select>
-                            <select class="filter-select" id="roleFilter">
-                                <option value="all">All Roles</option>
-                                <option value="batsman">Batsman</option>
-                                <option value="bowler">Bowler</option>
-                                <option value="all-rounder">All Rounder</option>
-                                <option value="wicketkeeper">Wicketkeeper</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <button class="btn btn-secondary" id="refreshStoreBtn">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="pack-container" id="playerStoreGrid">
-                        <!-- Player cards will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Events Page -->
-                <div class="page" id="eventsPage" style="display: none;">
-                    <div class="page-header">
-                        <h2>Events & Rewards</h2>
-                    </div>
-
-                    <div class="events-container" id="eventsContainer">
-                        <!-- Events will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Notifications Page -->
-                <div class="page" id="notificationsPage" style="display: none;">
-                    <div class="page-header">
-                        <h2>Notifications</h2>
-                        <button class="btn btn-primary" id="markAllReadBtn">Mark All as Read</button>
-                    </div>
-
-                    <div class="notifications-container" id="notificationsContainer">
-                        <!-- Notifications will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Matchmaking Page (Hidden by default) -->
-                <div class="page" id="matchmakingPage" style="display: none;">
-                    <div class="matchmaking-container">
-                        <div class="matchmaking-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h2 class="matchmaking-title">Finding Opponent</h2>
-                        <p class="matchmaking-text">Searching for a player with similar team rating...</p>
-                        <div class="matchmaking-progress">
-                            <div class="matchmaking-progress-bar" id="matchmakingProgress"></div>
-                        </div>
-                        <div class="matchmaking-timer" id="matchmakingTimer">Estimated time: 3 seconds</div>
-                        <button class="btn btn-secondary" id="cancelMatchmakingBtn">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- Match Page (Hidden by default) -->
-                <div class="page" id="matchPage" style="display: none;">
-                    <div class="match-container">
-                        <div class="match-header">
-                            <div class="match-teams">
-                                <div class="team-flag" id="userTeamFlag">U</div>
-                                <div class="vs">VS</div>
-                                <div class="team-flag" id="opponentTeamFlag">O</div>
-                            </div>
-                            <div class="match-info" id="matchFormat">T20 Match</div>
-                        </div>
-                        <div class="match-body">
-                            <div class="scoreboard">
-                                <div class="scoreboard-team">
-                                    <div class="scoreboard-team-name" id="userTeamName">Your Team</div>
-                                    <div class="scoreboard-score" id="userTeamScore">0/0</div>
-                                    <div class="scoreboard-overs" id="userTeamOvers">(0.0 ov)</div>
-                                </div>
-                                <div class="scoreboard-team">
-                                    <div class="scoreboard-team-name" id="opponentTeamName">Opponent</div>
-                                    <div class="scoreboard-score" id="opponentTeamScore">0/0</div>
-                                    <div class="scoreboard-overs" id="opponentTeamOvers">(0.0 ov)</div>
-                                </div>
-                            </div>
-                            <div class="match-status" id="matchStatus">Waiting for match to start...</div>
-                            <div class="match-actions" id="matchActions" style="display: none;">
-                                <!-- Action buttons will be populated here -->
-                            </div>
-                            <div class="match-timer" id="matchTimer">Time left: 3 seconds</div>
-                            <div class="match-commentary" id="matchCommentary">
-                                <!-- Commentary will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+            <button id="loginBtn" class="btn">Start Playing</button>
         </div>
     </div>
-
-    <!-- Firebase and Game Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+    
+    <!-- Main Game Screen -->
+    <div class="game-screen">
+        <div class="container">
+            <div class="header">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div class="username" id="displayUsername">User</div>
+                </div>
+                <div class="diamonds">
+                    <i>💎</i>
+                    <span id="diamondCount">0</span>
+                </div>
+            </div>
+            
+            <ul class="nav-tabs">
+                <li class="active" data-tab="lobby">Lobby</li>
+                <li data-tab="team">Team</li>
+                <li data-tab="store">Store</li>
+                <li data-tab="leaderboard">Leaderboard</li>
+            </ul>
+            
+            <div class="tab-content active" id="lobby">
+                <div class="lobby">
+                    <h2>Welcome to Cricket Kingdom</h2>
+                    <p>Build your dream team and compete against players worldwide!</p>
+                    <button id="playBtn" class="play-btn btn">Play Now</button>
+                    
+                    <div class="leaderboard">
+                        <h3>Global Leaderboard</h3>
+                        <div id="globalLeaderboard">
+                            <!-- Leaderboard items will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="team">
+                <div class="team-management">
+                    <h2>My Team</h2>
+                    <p>Select your playing XI for the next match</p>
+                    
+                    <div class="team-squad" id="playerCards">
+                        <!-- Player cards will be added here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="store">
+                <div class="store">
+                    <h2>Player Store</h2>
+                    <p>Buy new players to strengthen your team</p>
+                    
+                    <div class="store-items" id="storeItems">
+                        <!-- Store items will be added here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="leaderboard">
+                <div class="leaderboard">
+                    <h3>Global Rankings</h3>
+                    <div id="fullLeaderboard">
+                        <!-- Full leaderboard will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Matchmaking Screen -->
+    <div class="matchmaking">
+        <h2>Finding Opponent</h2>
+        <div class="matchmaking-status" id="matchmakingStatus">
+            <div class="spinner"></div> Searching for players...
+        </div>
+        <div class="progress-bar">
+            <div class="progress" id="matchmakingProgress"></div>
+        </div>
+        <div class="countdown" id="countdown" style="display: none;">30</div>
+        <button id="cancelMatchmaking" class="btn btn-secondary">Cancel</button>
+    </div>
+    
+    <!-- Toss Screen -->
+    <div class="toss-screen">
+        <h2>Toss Time!</h2>
+        <div class="toss-result" id="tossResult">Waiting for toss...</div>
+        <div id="tossOptions" class="toss-options" style="display: none;">
+            <div class="toss-option" data-choice="bat">Bat First</div>
+            <div class="toss-option" data-choice="bowl">Bowl First</div>
+        </div>
+        <div id="tossWaiting" style="display: none;">
+            <p>Waiting for opponent to choose...</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Gameplay Screen -->
+    <div class="gameplay">
+        <div class="container">
+            <div class="match-info">
+                <div class="team">
+                    <div class="team-logo" id="team1Logo">T1</div>
+                    <div class="team-name" id="team1Name">Team 1</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="team">
+                    <div class="team-logo" id="team2Logo">T2</div>
+                    <div class="team-name" id="team2Name">Team 2</div>
+                </div>
+            </div>
+            
+            <div class="scoreboard">
+                <div class="scoreboard-header">
+                    <div class="current-batsman">
+                        <div class="player-avatar">B</div>
+                        <div class="player-info">
+                            <div class="player-name" id="batsmanName">Batsman</div>
+                            <div class="player-stats">
+                                <span id="batsmanRuns">0</span> (<span id="batsmanBalls">0</span>)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="current-bowler">
+                        <div class="player-avatar">BW</div>
+                        <div class="player-info">
+                            <div class="player-name" id="bowlerName">Bowler</div>
+                            <div class="player-stats">
+                                <span id="bowlerOvers">0.0</span>-<span id="bowlerRuns">0</span>-<span id="bowlerWickets">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-display">
+                    <div class="runs" id="totalRuns">0/0</div>
+                    <div class="overs" id="totalOvers">0.0 overs</div>
+                </div>
+                
+                <div id="batsmanControls">
+                    <h3 style="text-align: center; margin: 15px 0;">Select your shot:</h3>
+                    <div class="action-buttons" id="batsmanButtons">
+                        <!-- Batsman action buttons will be added here -->
+                    </div>
+                    <div class="timer" id="batsmanTimer">Time left: 3s</div>
+                </div>
+                
+                <div id="bowlerControls" style="display: none;">
+                    <h3 style="text-align: center; margin: 15px 0;">Select your delivery:</h3>
+                    <div class="action-buttons" id="bowlerButtons">
+                        <!-- Bowler action buttons will be added here -->
+                    </div>
+                    <div class="timer" id="bowlerTimer">Time left: 3s</div>
+                </div>
+            </div>
+            
+            <div class="match-commentary" id="commentary">
+                <!-- Commentary will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i>✓</i>
+        <span id="notificationText">Notification message</span>
+    </div>
     
     <script>
         // Firebase configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyDX7Z8o5xVJa8cSHvaurZg4FkJvN8mJuto",
-  authDomain: "free-fire-kingdom.firebaseapp.com",
-  databaseURL: "https://free-fire-kingdom-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "free-fire-kingdom",
-  storageBucket: "free-fire-kingdom.firebasestorage.app",
-  messagingSenderId: "889375613179",
-  appId: "1:889375613179:web:b36bd72dd208b101e0d05e",
-  measurementId: "G-0EWSZ3SFX1"
+            apiKey: "AIzaSyDX7Z8o5xVJa8cSHvaurZg4FkJvN8mJuto",
+            authDomain: "free-fire-kingdom.firebaseapp.com",
+            databaseURL: "https://free-fire-kingdom-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "free-fire-kingdom",
+            storageBucket: "free-fire-kingdom.appspot.com",
+            messagingSenderId: "889375613179",
+            appId: "1:889375613179:web:b36bd72dd208b101e0d05e",
+            measurementId: "G-0EWSZ3SFX1"
         };
-
+        
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
-        const messaging = firebase.messaging();
-
+        const firestore = firebase.firestore();
+        
         // Game state
         let currentUser = null;
-        let userData = null;
-        let playerCards = [];
-        let userTeam = [];
-        let allPlayers = [];
-        let leaderboardData = [];
-        let eventsData = [];
-        let notificationsData = [];
-        let currentMatch = null;
+        let userData = {
+            username: '',
+            diamonds: 1000,
+            team: [],
+            rating: 1000,
+            wins: 0,
+            losses: 0,
+            avatar: `https://ui-avatars.com/api/?name=User&background=FF6B00&color=fff&size=128`
+        };
+        
+        let matchState = null;
         let matchInterval = null;
-
-        // DOM Elements
-        const authModal = document.getElementById('authModal');
-        const banModal = document.getElementById('banModal');
-        const banMessage = document.getElementById('banMessage');
-        const banCloseBtn = document.getElementById('banCloseBtn');
-        const appContainer = document.getElementById('appContainer');
-        const loginForm = document.getElementById('loginForm');
+        let actionTimeout = null;
+        let selectedAction = null;
+        let matchmakingTimeout = null;
+        let matchRef = null;
+        let queueRef = null;
+        let isPlayerTurn = false;
+        
+        // DOM elements
+        const authScreen = document.querySelector('.auth-screen');
+        const gameScreen = document.querySelector('.game-screen');
+        const matchmakingScreen = document.querySelector('.matchmaking');
+        const tossScreen = document.querySelector('.toss-screen');
+        const gameplayScreen = document.querySelector('.gameplay');
+        const loginBtn = document.getElementById('loginBtn');
         const usernameInput = document.getElementById('username');
-        const userAvatar = document.getElementById('userAvatar');
-        const diamondBalance = document.getElementById('diamondBalance');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const pages = document.querySelectorAll('.page');
-        const playNowBtn = document.getElementById('playNowBtn');
-        const teamRatingValue = document.getElementById('teamRatingValue');
-        const matchesPlayed = document.getElementById('matchesPlayed');
-        const highestScore = document.getElementById('highestScore');
-        const leaderboardBody = document.getElementById('leaderboardBody');
-        const fullLeaderboardBody = document.getElementById('fullLeaderboardBody');
-        const selectedPlayersGrid = document.getElementById('selectedPlayersGrid');
-        const teamRatingBig = document.getElementById('teamRatingBig');
-        const battingStat = document.getElementById('battingStat');
-        const bowlingStat = document.getElementById('bowlingStat');
-        const fieldingStat = document.getElementById('fieldingStat');
-        const fitnessStat = document.getElementById('fitnessStat');
-        const saveTeamBtn = document.getElementById('saveTeamBtn');
-        const playerStoreGrid = document.getElementById('playerStoreGrid');
-        const rarityFilter = document.getElementById('rarityFilter');
-        const roleFilter = document.getElementById('roleFilter');
-        const refreshStoreBtn = document.getElementById('refreshStoreBtn');
-        const eventsContainer = document.getElementById('eventsContainer');
-        const notificationsContainer = document.getElementById('notificationsContainer');
-        const markAllReadBtn = document.getElementById('markAllReadBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const matchmakingPage = document.getElementById('matchmakingPage');
+        const playBtn = document.getElementById('playBtn');
+        const cancelMatchmakingBtn = document.getElementById('cancelMatchmaking');
+        const countdownElement = document.getElementById('countdown');
+        const matchmakingStatus = document.getElementById('matchmakingStatus');
         const matchmakingProgress = document.getElementById('matchmakingProgress');
-        const matchmakingTimer = document.getElementById('matchmakingTimer');
-        const cancelMatchmakingBtn = document.getElementById('cancelMatchmakingBtn');
-        const matchPage = document.getElementById('matchPage');
-        const userTeamFlag = document.getElementById('userTeamFlag');
-        const opponentTeamFlag = document.getElementById('opponentTeamFlag');
-        const matchFormat = document.getElementById('matchFormat');
-        const userTeamName = document.getElementById('userTeamName');
-        const opponentTeamName = document.getElementById('opponentTeamName');
-        const userTeamScore = document.getElementById('userTeamScore');
-        const opponentTeamScore = document.getElementById('opponentTeamScore');
-        const userTeamOvers = document.getElementById('userTeamOvers');
-        const opponentTeamOvers = document.getElementById('opponentTeamOvers');
-        const matchStatus = document.getElementById('matchStatus');
-        const matchActions = document.getElementById('matchActions');
-        const matchTimer = document.getElementById('matchTimer');
-        const matchCommentary = document.getElementById('matchCommentary');
-
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const tossResult = document.getElementById('tossResult');
+        const tossOptions = document.getElementById('tossOptions');
+        const tossWaiting = document.getElementById('tossWaiting');
+        const batsmanControls = document.getElementById('batsmanControls');
+        const bowlerControls = document.getElementById('bowlerControls');
+        
         // Initialize the game
-        function initGame() {
-            setupAuth();
-            setupUI();
-            loadGameData();
+        function init() {
+            setupEventListeners();
+            checkAuthState();
+            loadPlayerCards();
+            loadStoreItems();
         }
-
-        // Setup authentication
-        function setupAuth() {
+        
+        // Check authentication state
+        function checkAuthState() {
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Check if user is banned before proceeding
-                    database.ref('bannedUsers/' + user.uid).once('value').then(snapshot => {
-                        if (snapshot.exists()) {
-                            // User is banned
-                            showBanModal(snapshot.val().reason || 'Violation of terms of service');
-                            auth.signOut();
-                        } else {
-                            // User is not banned, proceed
-                            currentUser = user;
-                            loadUserData();
-                            appContainer.style.display = 'block';
-                            authModal.style.display = 'none';
-                        }
-                    });
+                    currentUser = user;
+                    loadUserData();
+                    authScreen.style.display = 'none';
+                    gameScreen.style.display = 'block';
                 } else {
-                    authModal.style.display = 'flex';
-                    appContainer.style.display = 'none';
+                    currentUser = null;
+                    authScreen.style.display = 'flex';
+                    gameScreen.style.display = 'none';
                 }
             });
-
-            loginForm.addEventListener('submit', e => {
-                e.preventDefault();
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login button
+            loginBtn.addEventListener('click', () => {
                 const username = usernameInput.value.trim();
-                if (username) {
-                    checkUsernameAvailability(username).then(isAvailable => {
-                        if (isAvailable) {
-                            signInAnonymously(username);
-                        } else {
-                            alert('This username is already taken. Please choose another one.');
-                        }
-                    });
+                if (username.length < 3 || username.length > 15) {
+                    showNotification('Username must be 3-15 characters', 'error');
+                    return;
                 }
-            });
-        }
-
-        // Show ban modal
-        function showBanModal(reason) {
-            banMessage.textContent = `Your account has been suspended for: ${reason}`;
-            banModal.style.display = 'flex';
-        }
-
-        // Check if username is available
-        function checkUsernameAvailability(username) {
-            return database.ref('usernames').once('value').then(snapshot => {
-                const usernames = snapshot.val() || {};
-                return !Object.values(usernames).includes(username.toLowerCase());
-            });
-        }
-
-        // Sign in anonymously with username
-        function signInAnonymously(username) {
-            auth.signInAnonymously()
-                .then(() => {
-                    // Create user profile in database
-                    const userRef = database.ref('users/' + auth.currentUser.uid);
-                    
-                    return userRef.set({
-                        username: username,
-                        diamonds: 1000, // Starting diamonds
-                        matchesPlayed: 0,
-                        matchesWon: 0,
-                        highestScore: 0,
-                        teamRating: 0,
-                        createdAt: firebase.database.ServerValue.TIMESTAMP,
-                        lastLogin: firebase.database.ServerValue.TIMESTAMP
-                    }).then(() => {
-                        // Store username in lowercase for case-insensitive checking
-                        return database.ref('usernames/' + auth.currentUser.uid).set(username.toLowerCase());
-                    });
-                })
-                .catch(error => {
-                    console.error("Authentication error:", error);
-                    alert("Error signing in. Please try again.");
-                });
-        }
-
-        // Logout user
-        function logoutUser() {
-            auth.signOut().then(() => {
-                // Reset game state
-                currentUser = null;
-                userData = null;
-                playerCards = [];
-                userTeam = [];
-                currentMatch = null;
                 
-                // Show auth modal
-                authModal.style.display = 'flex';
-                appContainer.style.display = 'none';
+                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    showNotification('Username can only contain letters, numbers and underscores', 'error');
+                    return;
+                }
+                
+                // Anonymous authentication
+                auth.signInAnonymously()
+                    .then((credential) => {
+                        // Update user profile with username
+                        return credential.user.updateProfile({
+                            displayName: username,
+                            photoURL: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=FF6B00&color=fff&size=128`
+                        });
+                    })
+                    .then(() => {
+                        userData.username = username;
+                        userData.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=FF6B00&color=fff&size=128`;
+                        showNotification(`Welcome, ${username}!`, 'success');
+                    })
+                    .catch(error => {
+                        showNotification('Login failed: ' + error.message, 'error');
+                    });
+            });
+            
+            // Tab navigation
+            document.querySelectorAll('.nav-tabs li').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tabs li').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+            
+            // Play button
+            playBtn.addEventListener('click', startMatchmaking);
+            
+            // Cancel matchmaking
+            cancelMatchmakingBtn.addEventListener('click', cancelMatchmaking);
+            
+            // Toss options
+            document.querySelectorAll('.toss-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const choice = option.dataset.choice;
+                    makeTossChoice(choice);
+                });
             });
         }
-
+        
         // Load user data from Firebase
         function loadUserData() {
-            const userRef = database.ref('users/' + currentUser.uid);
+            if (!currentUser) return;
             
-            // Set up real-time listener for user data
-            userRef.on('value', snapshot => {
-                userData = snapshot.val();
-                if (userData) {
-                    updateUserUI();
-                    
-                    // Load other data that depends on user data
-                    if (!playerCards.length) loadPlayerCards();
-                    if (!leaderboardData.length) loadLeaderboard();
-                    if (!eventsData.length) loadEvents();
-                    if (!notificationsData.length) loadNotifications();
-                }
-            });
-        }
-
-        // Update UI with user data
-        function updateUserUI() {
-            userAvatar.textContent = userData.username.charAt(0).toUpperCase();
-            diamondBalance.textContent = userData.diamonds;
-            teamRatingValue.textContent = userData.teamRating;
-            matchesPlayed.textContent = userData.matchesPlayed;
-            highestScore.textContent = userData.highestScore;
-        }
-
-        // Load player cards for the user
-        function loadPlayerCards() {
-            const userCardsRef = database.ref('userCards/' + currentUser.uid);
+            userData.username = currentUser.displayName || 'Player';
+            userData.avatar = currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.username)}&background=FF6B00&color=fff&size=128`;
             
-            // Set up real-time listener for player cards
-            userCardsRef.on('value', snapshot => {
-                playerCards = [];
-                userTeam = [];
-                const cardsData = snapshot.val();
-                
-                if (cardsData) {
-                    Object.keys(cardsData).forEach(cardId => {
-                        database.ref('players/' + cardId).once('value', playerSnapshot => {
-                            const playerData = playerSnapshot.val();
-                            if (playerData) {
-                                const player = {
-                                    id: cardId,
-                                    ...playerData,
-                                    inTeam: cardsData[cardId].inTeam || false
-                                };
-                                
-                                playerCards.push(player);
-                                
-                                if (cardsData[cardId].inTeam) {
-                                    userTeam.push(player);
-                                }
-                                
-                                updateTeamUI();
-                            }
-                        });
-                    });
+            const userRef = firestore.collection('users').doc(currentUser.uid);
+            
+            userRef.get().then(doc => {
+                if (doc.exists) {
+                    userData = { ...userData, ...doc.data() };
+                    updateUI();
                 } else {
-                    updateTeamUI();
-                }
-            });
-        }
-
-        // Load all players for the store
-        function loadAllPlayers() {
-            const playersRef = database.ref('players');
-            
-            // Set up real-time listener for all players
-            playersRef.on('value', snapshot => {
-                allPlayers = [];
-                const playersData = snapshot.val();
-                if (playersData) {
-                    Object.keys(playersData).forEach(playerId => {
-                        allPlayers.push({
-                            id: playerId,
-                            ...playersData[playerId]
-                        });
+                    // Create new user document
+                    userRef.set({
+                        username: userData.username,
+                        diamonds: userData.diamonds,
+                        team: userData.team,
+                        rating: userData.rating,
+                        wins: userData.wins,
+                        losses: userData.losses,
+                        avatar: userData.avatar,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        updateUI();
                     });
-                    updateStoreUI();
                 }
             });
         }
-
-        // Load leaderboard data
-        function loadLeaderboard() {
-            const leaderboardRef = database.ref('leaderboard').orderByChild('rating').limitToLast(10);
+        
+        // Update UI with user data
+        function updateUI() {
+            document.getElementById('displayUsername').textContent = userData.username;
+            const avatar = document.getElementById('userAvatar');
+            avatar.textContent = userData.username.charAt(0).toUpperCase();
+            avatar.style.backgroundImage = `url(${userData.avatar})`;
+            document.getElementById('diamondCount').textContent = userData.diamonds;
             
-            // Set up real-time listener for leaderboard
-            leaderboardRef.on('value', snapshot => {
-                leaderboardData = [];
-                const leaderboardSnapshot = snapshot.val();
-                if (leaderboardSnapshot) {
-                    Object.keys(leaderboardSnapshot).forEach(userId => {
-                        leaderboardData.push({
-                            id: userId,
-                            ...leaderboardSnapshot[userId]
-                        });
-                    });
-                    // Sort by rating descending
-                    leaderboardData.sort((a, b) => b.rating - a.rating);
-                    updateLeaderboardUI();
-                }
-            });
+            // Update leaderboard
+            loadLeaderboard();
         }
-
-        // Load events data
-        function loadEvents() {
-            const eventsRef = database.ref('events');
+        
+        // Load player cards for team management
+        function loadPlayerCards() {
+            const playerCardsContainer = document.getElementById('playerCards');
+            playerCardsContainer.innerHTML = '';
             
-            // Set up real-time listener for events
-            eventsRef.on('value', snapshot => {
-                eventsData = [];
-                const eventsSnapshot = snapshot.val();
-                if (eventsSnapshot) {
-                    Object.keys(eventsSnapshot).forEach(eventId => {
-                        eventsData.push({
-                            id: eventId,
-                            ...eventsSnapshot[eventId]
-                        });
-                    });
-                    updateEventsUI();
-                }
-            });
-        }
-
-        // Load notifications
-        function loadNotifications() {
-            const notificationsRef = database.ref('notifications/' + currentUser.uid).orderByChild('timestamp').limitToLast(20);
+            // In a real app, you would fetch these from Firestore
+            const samplePlayers = [
+                { id: 'p1', name: 'Sachin', batting: 95, bowling: 25, rating: 90, type: 'batsman', avatar: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p2', name: 'Kohli', batting: 92, bowling: 30, rating: 88, type: 'batsman', avatar: 'https://images.unsplash.com/photo-1543357480-c60d400e7ef6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p3', name: 'Dhoni', batting: 85, bowling: 40, rating: 82, type: 'wk-batsman', avatar: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p4', name: 'Rohit', batting: 88, bowling: 35, rating: 85, type: 'batsman', avatar: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p5', name: 'Bumrah', batting: 20, bowling: 94, rating: 89, type: 'bowler', avatar: 'https://images.unsplash.com/photo-1543357480-c60d400e7ef6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p6', name: 'Shami', batting: 25, bowling: 88, rating: 85, type: 'bowler', avatar: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p7', name: 'Jadeja', batting: 75, bowling: 82, rating: 84, type: 'all-rounder', avatar: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p8', name: 'Hardik', batting: 80, bowling: 75, rating: 82, type: 'all-rounder', avatar: 'https://images.unsplash.com/photo-1543357480-c60d400e7ef6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p9', name: 'Rahul', batting: 82, bowling: 30, rating: 80, type: 'wk-batsman', avatar: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p10', name: 'Ashwin', batting: 65, bowling: 87, rating: 83, type: 'bowler', avatar: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p11', name: 'Iyer', batting: 78, bowling: 20, rating: 75, type: 'batsman', avatar: 'https://images.unsplash.com/photo-1543357480-c60d400e7ef6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 'p12', name: 'Chahal', batting: 30, bowling: 85, rating: 80, type: 'bowler', avatar: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }
+            ];
             
-            // Set up real-time listener for notifications
-            notificationsRef.on('value', snapshot => {
-                notificationsData = [];
-                const notificationsSnapshot = snapshot.val();
-                if (notificationsSnapshot) {
-                    Object.keys(notificationsSnapshot).forEach(notificationId => {
-                        notificationsData.unshift({
-                            id: notificationId,
-                            ...notificationsSnapshot[notificationId]
-                        });
-                    });
-                    updateNotificationsUI();
-                }
-            });
-        }
-
-        // Setup UI event listeners
-        function setupUI() {
-            // Navigation
-            navLinks.forEach(link => {
-                link.addEventListener('click', e => {
-                    e.preventDefault();
-                    const page = link.getAttribute('data-page');
-                    showPage(page);
-                    
-                    // Update active state
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    link.classList.add('active');
+            samplePlayers.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.dataset.id = player.id;
+                card.innerHTML = `
+                    <div class="player-avatar" style="background-image: url(${player.avatar})">${player.name.charAt(0)}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-stats">
+                        <span>BAT ${player.batting}</span>
+                        <span>BOW ${player.bowling}</span>
+                    </div>
+                    <div class="player-rating">${player.rating} ★</div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    card.classList.toggle('selected');
+                    // In a real app, you would update the selected team here
                 });
-            });
-
-            // Play Now button
-            playNowBtn.addEventListener('click', startMatchmaking);
-
-            // Save Team button
-            saveTeamBtn.addEventListener('click', saveTeam);
-
-            // Store filters
-            rarityFilter.addEventListener('change', updateStoreUI);
-            roleFilter.addEventListener('change', updateStoreUI);
-            refreshStoreBtn.addEventListener('click', loadAllPlayers);
-
-            // Notifications
-            markAllReadBtn.addEventListener('click', markAllNotificationsAsRead);
-
-            // Logout
-            logoutBtn.addEventListener('click', logoutUser);
-
-            // Matchmaking
-            cancelMatchmakingBtn.addEventListener('click', cancelMatchmaking);
-
-            // Ban modal close
-            banCloseBtn.addEventListener('click', () => {
-                banModal.style.display = 'none';
-            });
-        }
-
-        // Show specific page
-        function showPage(page) {
-            pages.forEach(p => p.style.display = 'none');
-            
-            switch(page) {
-                case 'dashboard':
-                    document.getElementById('dashboardPage').style.display = 'block';
-                    break;
-                case 'team':
-                    document.getElementById('teamPage').style.display = 'block';
-                    updateTeamUI();
-                    break;
-                case 'leaderboard':
-                    document.getElementById('leaderboardPage').style.display = 'block';
-                    updateFullLeaderboardUI();
-                    break;
-                case 'store':
-                    document.getElementById('storePage').style.display = 'block';
-                    loadAllPlayers();
-                    break;
-                case 'events':
-                    document.getElementById('eventsPage').style.display = 'block';
-                    updateEventsUI();
-                    break;
-                case 'notifications':
-                    document.getElementById('notificationsPage').style.display = 'block';
-                    updateNotificationsUI();
-                    break;
-            }
-        }
-
-        // Update team UI
-        function updateTeamUI() {
-            // Clear current team display
-            selectedPlayersGrid.innerHTML = '';
-            
-            if (userTeam.length === 0) {
-                selectedPlayersGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
-                        <i class="fas fa-users" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <p>No players selected. Add players from the store to build your team.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Calculate team stats
-            let totalRating = 0;
-            let battingTotal = 0;
-            let bowlingTotal = 0;
-            let fieldingTotal = 0;
-            let fitnessTotal = 0;
-            
-            userTeam.forEach(player => {
-                totalRating += player.rating;
-                battingTotal += player.stats.batting;
-                bowlingTotal += player.stats.bowling;
-                fieldingTotal += player.stats.fielding;
-                fitnessTotal += player.stats.fitness;
                 
-                // Create player card
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card selected';
-                playerCard.innerHTML = `
-                    <div class="player-image">
-                        ${getPlayerEmoji(player.role)}
+                playerCardsContainer.appendChild(card);
+            });
+        }
+        
+        // Load store items
+        function loadStoreItems() {
+            const storeItemsContainer = document.getElementById('storeItems');
+            storeItemsContainer.innerHTML = '';
+            
+            // In a real app, you would fetch these from Firestore
+            const sampleItems = [
+                { id: 's1', name: 'Gold Player Pack', price: 500, image: 'https://images.unsplash.com/photo-1601662528567-526cd06f6582?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 's2', name: 'Silver Player Pack', price: 300, image: 'https://images.unsplash.com/photo-1601662528567-526cd06f6582?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 's3', name: 'Bronze Player Pack', price: 150, image: 'https://images.unsplash.com/photo-1601662528567-526cd06f6582?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 's4', name: 'Elite Batsman', price: 400, image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 's5', name: 'Premium Bowler', price: 400, image: 'https://images.unsplash.com/photo-1543357480-c60d400e7ef6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' },
+                { id: 's6', name: 'Diamond Bundle', price: 1000, image: 'https://images.unsplash.com/photo-1601662528567-526cd06f6582?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' }
+            ];
+            
+            sampleItems.forEach(item => {
+                const storeItem = document.createElement('div');
+                storeItem.className = 'store-item';
+                storeItem.dataset.id = item.id;
+                storeItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <h4>${item.name}</h4>
+                    <div class="item-price">
+                        <i>💎</i>
+                        <span>${item.price}</span>
                     </div>
-                    <div class="player-details">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-rating">
-                            <span>${player.role}</span>
-                            <span class="player-rating-value">${player.rating}</span>
-                        </div>
-                    </div>
-                    <div class="player-actions">
-                        <button class="player-btn remove" data-id="${player.id}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+                    <button class="btn btn-secondary">Buy Now</button>
                 `;
-                selectedPlayersGrid.appendChild(playerCard);
-            });
-            
-            // Update team stats
-            const teamSize = userTeam.length || 1;
-            teamRatingBig.textContent = Math.round(totalRating);
-            battingStat.textContent = Math.round(battingTotal / teamSize);
-            bowlingStat.textContent = Math.round(bowlingTotal / teamSize);
-            fieldingStat.textContent = Math.round(fieldingTotal / teamSize);
-            fitnessStat.textContent = Math.round(fitnessTotal / teamSize);
-            
-            // Add event listeners to remove buttons
-            document.querySelectorAll('.player-btn.remove').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const playerId = btn.getAttribute('data-id');
-                    removeFromTeam(playerId);
-                });
-            });
-        }
-
-        // Get emoji for player role
-        function getPlayerEmoji(role) {
-            switch(role.toLowerCase()) {
-                case 'batsman': return '🏏';
-                case 'bowler': return '🎯';
-                case 'all-rounder': return '🌟';
-                case 'wicketkeeper': return '🧤';
-                default: return '👤';
-            }
-        }
-
-        // Remove player from team
-        function removeFromTeam(playerId) {
-            database.ref('userCards/' + currentUser.uid + '/' + playerId).update({
-                inTeam: false
-            }).then(() => {
-                // Remove from local team array
-                userTeam = userTeam.filter(player => player.id !== playerId);
-                updateTeamUI();
                 
-                // Update team rating in user profile
-                updateTeamRating();
-            });
-        }
-
-        // Save team to database
-        function saveTeam() {
-            if (userTeam.length < 5) {
-                alert('Your team must have at least 5 players');
-                return;
-            }
-            
-            // Team is already saved in real-time as players are added/removed
-            alert('Team saved successfully!');
-            updateTeamRating();
-        }
-
-        // Update team rating in user profile
-        function updateTeamRating() {
-            let totalRating = 0;
-            userTeam.forEach(player => {
-                totalRating += player.rating;
-            });
-            
-            const avgRating = userTeam.length > 0 ? Math.round(totalRating / userTeam.length) : 0;
-            
-            database.ref('users/' + currentUser.uid).update({
-                teamRating: avgRating
-            }).then(() => {
-                // Also update leaderboard
-                updateLeaderboardEntry();
-            });
-        }
-
-        // Update leaderboard entry for current user
-        function updateLeaderboardEntry() {
-            database.ref('leaderboard/' + currentUser.uid).set({
-                username: userData.username,
-                rating: userData.teamRating || 0,
-                matchesPlayed: userData.matchesPlayed || 0,
-                matchesWon: userData.matchesWon || 0,
-                highestScore: userData.highestScore || 0
-            });
-        }
-
-        // Update leaderboard UI (dashboard)
-        function updateLeaderboardUI() {
-            leaderboardBody.innerHTML = '';
-            
-            leaderboardData.slice(0, 5).forEach((user, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><span class="rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</span></td>
-                    <td>
-                        <div class="user-row">
-                            <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
-                            <span>${user.username}</span>
-                        </div>
-                    </td>
-                    <td>${user.rating}</td>
-                    <td>${user.matchesPlayed}</td>
-                `;
-                leaderboardBody.appendChild(row);
-            });
-        }
-
-        // Update full leaderboard UI (leaderboard page)
-        function updateFullLeaderboardUI() {
-            fullLeaderboardBody.innerHTML = '';
-            
-            leaderboardData.forEach((user, index) => {
-                const winPercentage = user.matchesPlayed > 0 
-                    ? Math.round((user.matchesWon / user.matchesPlayed) * 100) 
-                    : 0;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><span class="rank ${index < 3 ? 'rank-' + (index + 1) : ''}">${index + 1}</span></td>
-                    <td>
-                        <div class="user-row">
-                            <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
-                            <span>${user.username}</span>
-                        </div>
-                    </td>
-                    <td>${user.rating}</td>
-                    <td>${user.matchesPlayed}</td>
-                    <td>${winPercentage}%</td>
-                `;
-                fullLeaderboardBody.appendChild(row);
-            });
-        }
-
-        // Update store UI
-        function updateStoreUI() {
-            playerStoreGrid.innerHTML = '';
-            
-            const rarityFilterValue = rarityFilter.value;
-            const roleFilterValue = roleFilter.value;
-            
-            const filteredPlayers = allPlayers.filter(player => {
-                return (rarityFilterValue === 'all' || player.rarity === rarityFilterValue) &&
-                       (roleFilterValue === 'all' || player.role.toLowerCase() === roleFilterValue);
-            });
-            
-            if (filteredPlayers.length === 0) {
-                playerStoreGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
-                        <i class="fas fa-search" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <p>No players found matching your filters.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            filteredPlayers.forEach(player => {
-                const alreadyOwned = playerCards.some(card => card.id === player.id);
-                const inTeam = playerCards.some(card => card.id === player.id && card.inTeam);
-                
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                if (inTeam) playerCard.classList.add('selected');
-                playerCard.innerHTML = `
-                    <div class="player-image">
-                        ${getPlayerEmoji(player.role)}
-                    </div>
-                    <div class="player-details">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-rating">
-                            <span>${player.role} • ${player.rarity}</span>
-                            <span class="player-rating-value">${player.rating}</span>
-                        </div>
-                    </div>
-                    <div class="player-actions">
-                        ${alreadyOwned 
-                            ? `<button class="player-btn ${inTeam ? 'remove' : 'add'}" data-id="${player.id}">
-                                <i class="fas fa-${inTeam ? 'times' : 'plus'}"></i>
-                               </button>`
-                            : `<button class="player-btn buy" data-id="${player.id}">
-                                <i class="fas fa-shopping-cart"></i>
-                               </button>`}
-                    </div>
-                `;
-                playerStoreGrid.appendChild(playerCard);
-            });
-            
-            // Add event listeners to action buttons
-            document.querySelectorAll('.player-btn.add').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const playerId = btn.getAttribute('data-id');
-                    addToTeam(playerId);
-                });
-            });
-            
-            document.querySelectorAll('.player-btn.remove').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const playerId = btn.getAttribute('data-id');
-                    removeFromTeam(playerId);
-                });
-            });
-            
-            document.querySelectorAll('.player-btn.buy').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const playerId = btn.getAttribute('data-id');
-                    buyPlayerCard(playerId);
-                });
-            });
-        }
-
-        // Add player to team
-        function addToTeam(playerId) {
-            // Check if team already has 11 players
-            if (userTeam.length >= 11) {
-                alert('Your team can have maximum 11 players');
-                return;
-            }
-            
-            database.ref('userCards/' + currentUser.uid + '/' + playerId).update({
-                inTeam: true
-            }).then(() => {
-                // Add to local team array
-                const player = playerCards.find(p => p.id === playerId);
-                if (player) {
-                    userTeam.push(player);
-                    updateTeamUI();
-                    
-                    // Update team rating in user profile
-                    updateTeamRating();
-                }
-            });
-        }
-
-        // Buy player card
-        function buyPlayerCard(playerId) {
-            const player = allPlayers.find(p => p.id === playerId);
-            if (!player) return;
-            
-            if (userData.diamonds < player.price) {
-                alert('Not enough diamonds to buy this player');
-                return;
-            }
-            
-            if (confirm(`Buy ${player.name} for ${player.price} diamonds?`)) {
-                // Deduct diamonds
-                const newDiamondBalance = userData.diamonds - player.price;
-                
-                database.ref('users/' + currentUser.uid).update({
-                    diamonds: newDiamondBalance
-                }).then(() => {
-                    // Add player to user's collection
-                    return database.ref('userCards/' + currentUser.uid + '/' + playerId).set({
-                        inTeam: false
-                    });
-                }).then(() => {
-                    alert(`You've successfully bought ${player.name}!`);
-                    loadAllPlayers(); // Refresh store
-                });
-            }
-        }
-
-        // Update events UI
-        function updateEventsUI() {
-            eventsContainer.innerHTML = '';
-            
-            if (eventsData.length === 0) {
-                eventsContainer.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #777;">
-                        <i class="fas fa-calendar-times" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <p>No active events at the moment. Check back later!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            eventsData.forEach(event => {
-                const now = Date.now();
-                const startTime = event.startTime || 0;
-                const endTime = event.endTime || 0;
-                const isActive = now >= startTime && now <= endTime;
-                const progress = event.progress || 0;
-                const target = event.target || 100;
-                const progressPercent = Math.min(100, (progress / target) * 100);
-                const isCompleted = progress >= target;
-                
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-                eventCard.innerHTML = `
-                    <div class="event-header">
-                        <div class="event-title">${event.name}</div>
-                        <div class="event-time">
-                            ${isActive 
-                                ? 'Ends in: ' + formatTimeRemaining(endTime - now)
-                                : now < startTime 
-                                    ? 'Starts in: ' + formatTimeRemaining(startTime - now)
-                                    : 'Event ended'}
-                        </div>
-                    </div>
-                    <div class="event-body">
-                        <p class="event-description">${event.description}</p>
-                        
-                        <div class="event-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                            </div>
-                            <div class="progress-text">
-                                <span>${progress}/${target}</span>
-                                <span>${Math.round(progressPercent)}%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="event-rewards">
-                            ${event.rewards ? Object.entries(event.rewards).map(([type, amount]) => `
-                                <div class="reward-item">
-                                    ${type === 'diamonds' ? '<i class="fas fa-gem"></i>' : ''}
-                                    ${type === 'card' ? '<i class="fas fa-user"></i>' : ''}
-                                    ${amount} ${type}
-                                </div>
-                            `).join('') : ''}
-                        </div>
-                        
-                        <button class="event-btn ${isCompleted && isActive ? 'claim' : 'locked'}" 
-                                data-id="${event.id}" ${!(isCompleted && isActive) ? 'disabled' : ''}>
-                            ${isCompleted && isActive ? 'Claim Reward' : 
-                              isActive ? 'In Progress' : 'Event Ended'}
-                        </button>
-                    </div>
-                `;
-                eventsContainer.appendChild(eventCard);
-            });
-            
-            // Add event listeners to claim buttons
-            document.querySelectorAll('.event-btn.claim').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const eventId = btn.getAttribute('data-id');
-                    claimEventReward(eventId);
-                });
-            });
-        }
-
-        // Format time remaining
-        function formatTimeRemaining(ms) {
-            const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-            
-            let result = '';
-            if (days > 0) result += `${days}d `;
-            if (hours > 0) result += `${hours}h `;
-            result += `${minutes}m`;
-            
-            return result.trim();
-        }
-
-        // Claim event reward
-        function claimEventReward(eventId) {
-            const event = eventsData.find(e => e.id === eventId);
-            if (!event || !event.rewards) return;
-            
-            // Mark event as claimed for this user
-            database.ref('userEvents/' + currentUser.uid + '/' + eventId).set({
-                claimed: true,
-                claimedAt: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-                // Process rewards
-                let updates = {};
-                let rewardMessage = 'You received: ';
-                
-                if (event.rewards.diamonds) {
-                    const newDiamonds = userData.diamonds + event.rewards.diamonds;
-                    updates['users/' + currentUser.uid + '/diamonds'] = newDiamonds;
-                    rewardMessage += `${event.rewards.diamonds} diamonds, `;
-                }
-                
-                if (event.rewards.card) {
-                    // For simplicity, we'll just add a random player card
-                    const randomPlayer = allPlayers[Math.floor(Math.random() * allPlayers.length)];
-                    if (randomPlayer) {
-                        updates['userCards/' + currentUser.uid + '/' + randomPlayer.id] = {
-                            inTeam: false
-                        };
-                        rewardMessage += `${randomPlayer.name} card, `;
+                storeItem.querySelector('button').addEventListener('click', () => {
+                    if (userData.diamonds >= item.price) {
+                        // In a real app, you would process the purchase here
+                        userData.diamonds -= item.price;
+                        updateUI();
+                        showNotification(`Purchased ${item.name}!`, 'success');
+                    } else {
+                        showNotification('Not enough diamonds', 'error');
                     }
+                });
+                
+                storeItemsContainer.appendChild(storeItem);
+            });
+        }
+        
+        // Load leaderboard
+        function loadLeaderboard() {
+            // In a real app, you would fetch this from Firestore
+            const sampleLeaderboard = [
+                { username: 'Champion', rating: 2450, wins: 120, avatar: 'https://ui-avatars.com/api/?name=Champion&background=FF6B00&color=fff&size=128' },
+                { username: 'ProPlayer', rating: 2300, wins: 110, avatar: 'https://ui-avatars.com/api/?name=ProPlayer&background=FF6B00&color=fff&size=128' },
+                { username: 'CricketKing', rating: 2250, wins: 105, avatar: 'https://ui-avatars.com/api/?name=CricketKing&background=FF6B00&color=fff&size=128' },
+                { username: 'SixHitter', rating: 2200, wins: 100, avatar: 'https://ui-avatars.com/api/?name=SixHitter&background=FF6B00&color=fff&size=128' },
+                { username: 'WicketTaker', rating: 2150, wins: 95, avatar: 'https://ui-avatars.com/api/?name=WicketTaker&background=FF6B00&color=fff&size=128' },
+                { username: userData.username, rating: userData.rating, wins: userData.wins, avatar: userData.avatar }
+            ];
+            
+            // Sort by rating
+            sampleLeaderboard.sort((a, b) => b.rating - a.rating);
+            
+            // Update global leaderboard (short)
+            const globalLeaderboard = document.getElementById('globalLeaderboard');
+            globalLeaderboard.innerHTML = '';
+            
+            sampleLeaderboard.slice(0, 5).forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <span class="rank">${index + 1}</span>
+                    <div class="avatar" style="background-image: url(${player.avatar})">${player.username.charAt(0)}</div>
+                    <span class="name">${player.username}</span>
+                    <span class="score">${player.rating}</span>
+                `;
+                globalLeaderboard.appendChild(item);
+            });
+            
+            // Update full leaderboard
+            const fullLeaderboard = document.getElementById('fullLeaderboard');
+            fullLeaderboard.innerHTML = '';
+            
+            sampleLeaderboard.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                if (player.username === userData.username) {
+                    item.style.background = 'rgba(255, 168, 0, 0.1)';
                 }
-                
-                // Remove trailing comma
-                rewardMessage = rewardMessage.replace(/, $/, '');
-                
-                // Update database
-                return database.ref().update(updates);
-            }).then(() => {
-                alert('Rewards claimed successfully!');
-                loadEvents(); // Refresh events
-            });
-        }
-
-        // Update notifications UI
-        function updateNotificationsUI() {
-            notificationsContainer.innerHTML = '';
-            
-            if (notificationsData.length === 0) {
-                notificationsContainer.innerHTML = `
-                    <div class="empty-state" style="text-align: center; padding: 40px; color: #777;">
-                        <i class="fas fa-bell-slash" style="font-size: 40px; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <p>No notifications yet</p>
-                    </div>
+                item.innerHTML = `
+                    <span class="rank">${index + 1}</span>
+                    <div class="avatar" style="background-image: url(${player.avatar})">${player.username.charAt(0)}</div>
+                    <span class="name">${player.username}</span>
+                    <span class="score">${player.rating} (${player.wins} wins)</span>
                 `;
-                return;
-            }
-            
-            notificationsData.forEach(notification => {
-                const notificationItem = document.createElement('div');
-                notificationItem.className = 'notification-item';
-                notificationItem.innerHTML = `
-                    <div class="notification-icon">
-                        <i class="fas fa-${notification.icon || 'bell'}"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">${notification.title}</div>
-                        <p class="notification-text">${notification.message}</p>
-                        <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
-                    </div>
-                `;
-                notificationsContainer.appendChild(notificationItem);
+                fullLeaderboard.appendChild(item);
             });
         }
-
-        // Format notification time
-        function formatNotificationTime(timestamp) {
-            const now = Date.now();
-            const diff = now - timestamp;
-            const minutes = Math.floor(diff / (1000 * 60));
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            
-            if (minutes < 1) return 'Just now';
-            if (minutes < 60) return `${minutes}m ago`;
-            if (hours < 24) return `${hours}h ago`;
-            return `${days}d ago`;
-        }
-
-        // Mark all notifications as read
-        function markAllNotificationsAsRead() {
-            const updates = {};
-            notificationsData.forEach(notification => {
-                updates['notifications/' + currentUser.uid + '/' + notification.id + '/read'] = true;
-            });
-            
-            database.ref().update(updates).then(() => {
-                loadNotifications(); // Refresh notifications
-            });
-        }
-
+        
         // Start matchmaking
         function startMatchmaking() {
-            if (userTeam.length < 5) {
-                alert('Your team must have at least 5 players to play a match');
-                return;
-            }
+            gameScreen.style.display = 'none';
+            matchmakingScreen.style.display = 'block';
             
-            showPage('matchmaking');
+            // Join matchmaking queue in Firebase
+            queueRef = database.ref('matchmaking/queue').push();
+            queueRef.set({
+                userId: currentUser.uid,
+                username: userData.username,
+                rating: userData.rating,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
             
-            // Simulate matchmaking progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                matchmakingProgress.style.width = `${progress}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    findOpponent();
+            // Listen for match found
+            database.ref('matchmaking/queue').orderByChild('timestamp').on('child_added', (snapshot) => {
+                if (snapshot.key !== queueRef.key && !matchRef) {
+                    // Found a match
+                    const opponent = snapshot.val();
+                    createMatch(currentUser.uid, opponent.userId);
                 }
-            }, 300); // 3 seconds total
+            });
             
-            // Store interval to cancel if needed
-            matchInterval = interval;
-        }
-
-        // Cancel matchmaking
-        function cancelMatchmaking() {
-            if (matchInterval) {
-                clearInterval(matchInterval);
-                matchInterval = null;
-            }
-            showPage('dashboard');
-        }
-
-        // Find opponent (simplified for demo)
-        function findOpponent() {
-            // In a real app, this would find a player with similar team rating
-            // For demo, we'll just use a random bot opponent
+            // Set 30 second timeout
+            matchmakingTimeout = setTimeout(() => {
+                if (!matchRef) {
+                    cancelMatchmaking();
+                    showNotification('Could not find opponent. Please try again.', 'error');
+                }
+            }, 30000);
             
-            const botNames = ['CricketBot', 'AutoPlayer', 'AI Challenger', 'VirtualOpponent'];
-            const botName = botNames[Math.floor(Math.random() * botNames.length)];
-            
-            currentMatch = {
-                id: 'match_' + Date.now(),
-                userTeam: [...userTeam],
-                opponentTeam: generateBotTeam(userData.teamRating),
-                userScore: { runs: 0, wickets: 0, overs: 0 },
-                opponentScore: { runs: 0, wickets: 0, overs: 0 },
-                tossWinner: Math.random() > 0.5 ? 'user' : 'opponent',
-                battingFirst: Math.random() > 0.5 ? 'user' : 'opponent',
-                currentInnings: 1,
-                ballsRemaining: 120, // T20 match (20 overs)
-                status: 'starting',
-                commentary: []
-            };
-            
-            // Start the match
-            startMatch();
-        }
-
-        // Generate a bot team with similar rating
-        function generateBotTeam(targetRating) {
-            const teamSize = 5 + Math.floor(Math.random() * 6); // 5-10 players
-            const team = [];
-            
-            for (let i = 0; i < teamSize; i++) {
-                // Generate player with rating around targetRating (±20%)
-                const rating = Math.max(1, targetRating * (0.8 + Math.random() * 0.4));
-                const roles = ['Batsman', 'Bowler', 'All-Rounder', 'Wicketkeeper'];
-                const role = roles[Math.floor(Math.random() * roles.length)];
-                
-                team.push({
-                    id: 'bot_' + i,
-                    name: 'Player ' + (i + 1),
-                    role: role,
-                    rating: Math.round(rating),
-                    stats: {
-                        batting: Math.round(rating * (role === 'Batsman' ? 1 : 0.7) * (0.8 + Math.random() * 0.4)),
-                        bowling: Math.round(rating * (role === 'Bowler' ? 1 : 0.7) * (0.8 + Math.random() * 0.4)),
-                        fielding: Math.round(rating * 0.8 * (0.8 + Math.random() * 0.4)),
-                        fitness: Math.round(rating * 0.8 * (0.8 + Math.random() * 0.4))
-                    }
-                });
-            }
-            
-            return team;
-        }
-
-        // Start the match
-        function startMatch() {
-            showPage('match');
-            
-            // Set up match UI
-            userTeamFlag.textContent = userData.username.charAt(0).toUpperCase();
-            opponentTeamFlag.textContent = 'B';
-            userTeamName.textContent = userData.username;
-            opponentTeamName.textContent = 'Bot Opponent';
-            matchFormat.textContent = 'T20 Match';
-            
-            // Show toss result
-            const tossResult = currentMatch.tossWinner === 'user' ? 
-                `You won the toss and chose to ${currentMatch.battingFirst === 'user' ? 'bat' : 'bowl'} first` :
-                `Bot Opponent won the toss and chose to ${currentMatch.battingFirst === 'opponent' ? 'bat' : 'bowl'} first`;
-            
-            addCommentary(tossResult);
-            matchStatus.textContent = tossResult;
-            
-            // Start countdown
-            let countdown = 3;
-            matchTimer.textContent = `Match starting in: ${countdown} seconds`;
+            // Update UI
+            let timeLeft = 30;
+            countdownElement.textContent = timeLeft;
+            countdownElement.style.display = 'block';
             
             const countdownInterval = setInterval(() => {
-                countdown--;
-                matchTimer.textContent = `Match starting in: ${countdown} seconds`;
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+                matchmakingProgress.style.width = `${100 - (timeLeft / 30 * 100)}%`;
                 
-                if (countdown <= 0) {
+                if (timeLeft <= 0 || matchRef) {
                     clearInterval(countdownInterval);
-                    beginInnings();
                 }
             }, 1000);
         }
-
-        // Begin innings
-        function beginInnings() {
-            currentMatch.status = 'in_progress';
-            currentMatch.currentBall = 0;
-            currentMatch.currentBowler = getRandomBowler(currentMatch.opponentTeam);
+        
+        // Create a match between two players
+        function createMatch(player1Id, player2Id) {
+            // Create match in Firebase
+            matchRef = database.ref('matches').push();
             
-            matchStatus.textContent = currentMatch.currentInnings === 1 ?
-                (currentMatch.battingFirst === 'user' ? 'Your team is batting' : 'Bot Opponent is batting') :
-                (currentMatch.battingFirst === 'user' ? 'Bot Opponent is batting' : 'Your team is batting');
+            // Randomly decide who bats first
+            const tossWinner = Math.random() < 0.5 ? player1Id : player2Id;
             
-            if (currentMatch.battingFirst === (currentMatch.currentInnings === 1 ? 'user' : 'opponent')) {
-                // User is batting - show shot selection
-                setupBattingActions();
+            matchRef.set({
+                player1: player1Id,
+                player2: player2Id,
+                tossWinner: tossWinner,
+                tossChoice: null,
+                status: 'toss',
+                currentInning: 1,
+                battingTeam: null,
+                bowlingTeam: null,
+                score: {
+                    team1: { runs: 0, wickets: 0, overs: 0, balls: 0 },
+                    team2: { runs: 0, wickets: 0, overs: 0, balls: 0 }
+                },
+                currentBatsman: 0,
+                currentBowler: 0,
+                gameOver: false,
+                commentary: [],
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Clean up queue
+            database.ref('matchmaking/queue').off();
+            database.ref('matchmaking/queue').remove();
+            
+            // Listen for match updates
+            matchRef.on('value', (snapshot) => {
+                const match = snapshot.val();
+                if (!match) return;
+                
+                if (match.status === 'toss') {
+                    handleTossPhase(match);
+                } else if (match.status === 'inning1' || match.status === 'inning2') {
+                    handleInningPhase(match);
+                } else if (match.status === 'completed') {
+                    endMatch(match);
+                }
+            });
+        }
+        
+        // Handle toss phase
+        function handleTossPhase(match) {
+            matchmakingScreen.style.display = 'none';
+            tossScreen.style.display = 'block';
+            
+            if (match.tossWinner === currentUser.uid) {
+                // Current user won toss
+                tossResult.textContent = 'You won the toss! Choose what to do:';
+                tossOptions.style.display = 'flex';
+                tossWaiting.style.display = 'none';
             } else {
-                // User is bowling - show ball type selection
-                setupBowlingActions();
+                // Opponent won toss
+                tossResult.textContent = 'Opponent won the toss. Waiting for their choice...';
+                tossOptions.style.display = 'none';
+                tossWaiting.style.display = 'block';
             }
             
-            startBallTimer();
+            // If opponent has made choice
+            if (match.tossChoice) {
+                startMatchAfterToss(match);
+            }
         }
-
-        // Setup batting action buttons
-        function setupBattingActions() {
-            matchActions.innerHTML = '';
-            matchActions.style.display = 'grid';
-            
-            const shots = [
-                { name: 'Defensive', emoji: '🛡️', risk: 0.1, reward: 0.8 },
-                { name: 'Normal', emoji: '🏏', risk: 0.3, reward: 1.0 },
-                { name: 'Aggressive', emoji: '💥', risk: 0.5, reward: 1.5 },
-                { name: 'Slog', emoji: '🔥', risk: 0.8, reward: 2.0 },
-                { name: 'Reverse', emoji: '🔄', risk: 0.6, reward: 1.8 },
-                { name: 'Leave', emoji: '👋', risk: 0.05, reward: 0.1 }
-            ];
-            
-            shots.forEach(shot => {
-                const btn = document.createElement('button');
-                btn.className = 'action-btn';
-                btn.innerHTML = `
-                    <i>${shot.emoji}</i>
-                    <span>${shot.name}</span>
-                `;
-                btn.addEventListener('click', () => playShot(shot));
-                matchActions.appendChild(btn);
+        
+        // Make toss choice
+        function makeTossChoice(choice) {
+            matchRef.update({
+                tossChoice: choice,
+                battingTeam: choice === 'bat' ? (matchRef.tossWinner === currentUser.uid ? 'player1' : 'player2') : 
+                                              (matchRef.tossWinner === currentUser.uid ? 'player2' : 'player1'),
+                bowlingTeam: choice === 'bat' ? (matchRef.tossWinner === currentUser.uid ? 'player2' : 'player1') : 
+                                              (matchRef.tossWinner === currentUser.uid ? 'player1' : 'player2'),
+                status: 'inning1'
             });
         }
-
-        // Setup bowling action buttons
-        function setupBowlingActions() {
-            matchActions.innerHTML = '';
-            matchActions.style.display = 'grid';
+        
+        // Start match after toss
+        function startMatchAfterToss(match) {
+            tossScreen.style.display = 'none';
+            gameplayScreen.style.display = 'block';
             
-            const balls = [
-                { name: 'Fast', emoji: '⚡', effectiveness: 0.8 },
-                { name: 'Spin', emoji: '🌀', effectiveness: 1.0 },
-                { name: 'Yorker', emoji: '🎯', effectiveness: 1.2 },
-                { name: 'Bouncer', emoji: '👊', effectiveness: 0.9 },
-                { name: 'Slower', emoji: '🐢', effectiveness: 1.1 },
-                { name: 'Wide', emoji: '⬅️', effectiveness: 0.5 }
+            const isBattingFirst = (match.battingTeam === 'player1' && match.player1 === currentUser.uid) || 
+                                  (match.battingTeam === 'player2' && match.player2 === currentUser.uid);
+            
+            if (isBattingFirst) {
+                tossResult.textContent = `Opponent chose to bowl first. You're batting!`;
+            } else {
+                tossResult.textContent = `Opponent chose to bat first. You're bowling!`;
+            }
+            
+            // Initialize match state
+            matchState = {
+                player1: match.player1,
+                player2: match.player2,
+                battingTeam: match.battingTeam,
+                bowlingTeam: match.bowlingTeam,
+                currentInning: 1,
+                score: match.score,
+                gameOver: false,
+                commentary: match.commentary || []
+            };
+            
+            // Setup action buttons
+            setupActionButtons();
+            
+            // Start the match loop
+            startTurn();
+        }
+        
+        // Handle inning phase
+        function handleInningPhase(match) {
+            if (tossScreen.style.display === 'block') {
+                tossScreen.style.display = 'none';
+                gameplayScreen.style.display = 'block';
+            }
+            
+            matchState = {
+                player1: match.player1,
+                player2: match.player2,
+                battingTeam: match.battingTeam,
+                bowlingTeam: match.bowlingTeam,
+                currentInning: match.currentInning,
+                score: match.score,
+                gameOver: match.gameOver,
+                commentary: match.commentary || []
+            };
+            
+            updateMatchUI();
+            
+            // Check if it's player's turn
+            const isBatting = (match.battingTeam === 'player1' && match.player1 === currentUser.uid) || 
+                             (match.battingTeam === 'player2' && match.player2 === currentUser.uid);
+            
+            const isBowling = (match.bowlingTeam === 'player1' && match.player1 === currentUser.uid) || 
+                             (match.bowlingTeam === 'player2' && match.player2 === currentUser.uid);
+            
+            if ((isBatting && match.status === 'inning1') || (isBowling && match.status === 'inning2')) {
+                startTurn();
+            }
+        }
+        
+        // Setup action buttons
+        function setupActionButtons() {
+            const batsmanButtons = document.getElementById('batsmanButtons');
+            batsmanButtons.innerHTML = '';
+            
+            const bowlerButtons = document.getElementById('bowlerButtons');
+            bowlerButtons.innerHTML = '';
+            
+            // Batsman actions
+            const batActions = [
+                { name: 'Defensive', value: 'defensive', emoji: '🛡️' },
+                { name: 'Normal', value: 'normal', emoji: '🏏' },
+                { name: 'Aggressive', value: 'aggressive', emoji: '💥' },
+                { name: 'Slog', value: 'slog', emoji: '🔥' },
+                { name: 'Leave', value: 'leave', emoji: '👋' },
+                { name: 'Special', value: 'special', emoji: '✨' }
             ];
             
-            balls.forEach(ball => {
-                const btn = document.createElement('button');
-                btn.className = 'action-btn';
-                btn.innerHTML = `
-                    <i>${ball.emoji}</i>
-                    <span>${ball.name}</span>
-                `;
-                btn.addEventListener('click', () => bowlBall(ball));
-                matchActions.appendChild(btn);
+            batActions.forEach(action => {
+                const button = document.createElement('button');
+                button.className = 'action-btn';
+                button.innerHTML = `${action.emoji} ${action.name}`;
+                button.dataset.action = action.value;
+                
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('#batsmanButtons .action-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedAction = action.value;
+                });
+                
+                batsmanButtons.appendChild(button);
+            });
+            
+            // Bowler actions
+            const bowlActions = [
+                { name: 'Fast', value: 'fast', emoji: '⚡' },
+                { name: 'Spin', value: 'spin', emoji: '🌀' },
+                { name: 'Yorker', value: 'yorker', emoji: '🎯' },
+                { name: 'Bouncer', value: 'bouncer', emoji: '👊' },
+                { name: 'Slow', value: 'slow', emoji: '🐢' },
+                { name: 'Special', value: 'special', emoji: '✨' }
+            ];
+            
+            bowlActions.forEach(action => {
+                const button = document.createElement('button');
+                button.className = 'action-btn';
+                button.innerHTML = `${action.emoji} ${action.name}`;
+                button.dataset.action = action.value;
+                
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('#bowlerButtons .action-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedAction = action.value;
+                });
+                
+                bowlerButtons.appendChild(button);
             });
         }
-
-        // Start ball timer
-        function startBallTimer() {
+        
+        // Start player's turn
+        function startTurn() {
+            const isBatting = (matchState.battingTeam === 'player1' && matchState.player1 === currentUser.uid) || 
+                             (matchState.battingTeam === 'player2' && matchState.player2 === currentUser.uid);
+            
+            const isBowling = (matchState.bowlingTeam === 'player1' && matchState.player1 === currentUser.uid) || 
+                             (matchState.bowlingTeam === 'player2' && matchState.player2 === currentUser.uid);
+            
+            if (isBatting) {
+                batsmanControls.style.display = 'block';
+                bowlerControls.style.display = 'none';
+                startActionTimer('batsman');
+            } else if (isBowling) {
+                batsmanControls.style.display = 'none';
+                bowlerControls.style.display = 'block';
+                startActionTimer('bowler');
+            }
+        }
+        
+        // Start action timer
+        function startActionTimer(type) {
             let timeLeft = 3;
-            matchTimer.textContent = `Time left: ${timeLeft} seconds`;
+            const timerElement = document.getElementById(`${type}Timer`);
+            timerElement.textContent = `Time left: ${timeLeft}s`;
             
             const timerInterval = setInterval(() => {
                 timeLeft--;
-                matchTimer.textContent = `Time left: ${timeLeft} seconds`;
+                timerElement.textContent = `Time left: ${timeLeft}s`;
                 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    autoPlayBall();
+                    if (!selectedAction) {
+                        // Auto-select random action if time runs out
+                        const actions = type === 'batsman' ? 
+                            ['defensive', 'normal', 'aggressive', 'slog', 'leave'] : 
+                            ['fast', 'spin', 'yorker', 'bouncer', 'slow'];
+                        selectedAction = actions[Math.floor(Math.random() * actions.length)];
+                    }
+                    submitAction(type);
                 }
             }, 1000);
-            
-            // Store interval to clear if user makes a selection
-            currentMatch.ballTimer = timerInterval;
         }
-
-        // Auto play if user doesn't select in time
-        function autoPlayBall() {
-            if (currentMatch.battingFirst === (currentMatch.currentInnings === 1 ? 'user' : 'opponent')) {
-                // Auto select normal shot
-                playShot({ name: 'Normal', emoji: '🏏', risk: 0.3, reward: 1.0 });
-            } else {
-                // Auto select normal ball
-                bowlBall({ name: 'Normal', emoji: '🌀', effectiveness: 1.0 });
-            }
-        }
-
-        // Play shot (user is batting)
-        function playShot(shot) {
-            clearInterval(currentMatch.ballTimer);
-            matchActions.style.display = 'none';
+        
+        // Submit action to Firebase
+        function submitAction(type) {
+            if (!matchRef) return;
             
-            // Determine outcome based on shot and player stats
-            const batsman = getRandomBatsman(currentMatch.userTeam);
-            const bowler = currentMatch.currentBowler;
-            
-            const battingSkill = batsman.stats.batting;
-            const bowlingSkill = bowler.stats.bowling;
-            const fitnessImpact = batsman.stats.fitness / 100;
-            
-            // Calculate outcome
-            let outcome;
-            let runs = 0;
-            let isWicket = false;
-            
-            const shotSuccess = (battingSkill * shot.reward) / (bowlingSkill * 0.8);
-            const riskFactor = shot.risk * (1 - fitnessImpact);
-            
-            const random = Math.random();
-            
-            if (random < riskFactor * 0.3) {
-                // Wicket
-                isWicket = true;
-                outcome = 'OUT! ' + getRandomDismissal();
-            } else if (random < riskFactor * 0.7) {
-                // Dot ball
-                outcome = 'Dot ball';
-            } else if (random < shotSuccess * 0.3) {
-                // 1-3 runs
-                runs = Math.floor(Math.random() * 3) + 1;
-                outcome = `${runs} run${runs > 1 ? 's' : ''}`;
-            } else if (random < shotSuccess * 0.6) {
-                // Boundary (4)
-                runs = 4;
-                outcome = 'FOUR!';
-            } else if (random < shotSuccess * 0.9) {
-                // Boundary (6)
-                runs = 6;
-                outcome = 'SIX!';
-            } else {
-                // Wicket (even if random was high, small chance)
-                isWicket = true;
-                outcome = 'OUT! ' + getRandomDismissal();
-            }
-            
-            // Update score
-            if (currentMatch.currentInnings === 1) {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.userScore.runs += runs;
-                    if (isWicket) currentMatch.userScore.wickets++;
-                } else {
-                    currentMatch.opponentScore.runs += runs;
-                    if (isWicket) currentMatch.opponentScore.wickets++;
-                }
-            } else {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.opponentScore.runs += runs;
-                    if (isWicket) currentMatch.opponentScore.wickets++;
-                } else {
-                    currentMatch.userScore.runs += runs;
-                    if (isWicket) currentMatch.userScore.wickets++;
-                }
-            }
-            
-            // Update balls/overs
-            currentMatch.ballsRemaining--;
-            
-            if (currentMatch.currentInnings === 1) {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.userScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                } else {
-                    currentMatch.opponentScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                }
-            } else {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.opponentScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                } else {
-                    currentMatch.userScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                }
-            }
-            
-            // Add commentary
-            addCommentary(`${batsman.name} plays ${shot.name.toLowerCase()} shot: ${outcome}`);
-            
-            // Update scoreboard
-            updateScoreboard();
-            
-            // Check for innings end or match end
-            checkInningsEnd();
-        }
-
-        // Bowl ball (user is bowling)
-        function bowlBall(ball) {
-            clearInterval(currentMatch.ballTimer);
-            matchActions.style.display = 'none';
-            
-            // Determine outcome based on ball and player stats
-            const bowler = getRandomBowler(currentMatch.userTeam);
-            const batsman = getRandomBatsman(currentMatch.opponentTeam);
-            
-            const bowlingSkill = bowler.stats.bowling * ball.effectiveness;
-            const battingSkill = batsman.stats.batting;
-            const fieldingImpact = currentMatch.userTeam.reduce((sum, player) => sum + player.stats.fielding, 0) / currentMatch.userTeam.length / 100;
-            
-            // Calculate outcome
-            let outcome;
-            let runs = 0;
-            let isWicket = false;
-            
-            const ballSuccess = (bowlingSkill * 1.2) / (battingSkill * 0.9);
-            const fieldingFactor = 1 - (fieldingImpact * 0.5);
-            
-            const random = Math.random();
-            
-            if (random < ballSuccess * 0.2) {
-                // Wicket
-                isWicket = true;
-                outcome = 'OUT! ' + getRandomDismissal();
-            } else if (random < ballSuccess * 0.5) {
-                // Dot ball
-                outcome = 'Dot ball';
-            } else if (random < ballSuccess * 0.8) {
-                // 1-3 runs
-                runs = Math.floor(Math.random() * 3) + 1;
-                outcome = `${runs} run${runs > 1 ? 's' : ''}`;
-            } else if (random < ballSuccess * 1.1) {
-                // Boundary (4)
-                runs = 4;
-                outcome = 'FOUR!';
-            } else if (random < ballSuccess * 1.4) {
-                // Boundary (6)
-                runs = 6;
-                outcome = 'SIX!';
-            } else {
-                // Wide or no ball
-                runs = 1;
-                outcome = 'Wide ball';
-                currentMatch.ballsRemaining++; // Extra ball
-            }
-            
-            // Update score
-            if (currentMatch.currentInnings === 1) {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.opponentScore.runs += runs;
-                    if (isWicket) currentMatch.opponentScore.wickets++;
-                } else {
-                    currentMatch.userScore.runs += runs;
-                    if (isWicket) currentMatch.userScore.wickets++;
-                }
-            } else {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.userScore.runs += runs;
-                    if (isWicket) currentMatch.userScore.wickets++;
-                } else {
-                    currentMatch.opponentScore.runs += runs;
-                    if (isWicket) currentMatch.opponentScore.wickets++;
-                }
-            }
-            
-            // Update balls/overs
-            currentMatch.ballsRemaining--;
-            
-            if (currentMatch.currentInnings === 1) {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.opponentScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                } else {
-                    currentMatch.userScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                }
-            } else {
-                if (currentMatch.battingFirst === 'user') {
-                    currentMatch.userScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                } else {
-                    currentMatch.opponentScore.overs = calculateOvers(120 - currentMatch.ballsRemaining);
-                }
-            }
-            
-            // Add commentary
-            addCommentary(`${bowler.name} bowls ${ball.name.toLowerCase()}: ${outcome}`);
-            
-            // Update scoreboard
-            updateScoreboard();
-            
-            // Check for innings end or match end
-            checkInningsEnd();
-        }
-
-        // Get random batsman from team
-        function getRandomBatsman(team) {
-            const batsmen = team.filter(player => 
-                player.role === 'Batsman' || player.role === 'All-Rounder' || player.role === 'Wicketkeeper');
-            return batsmen.length > 0 ? 
-                batsmen[Math.floor(Math.random() * batsmen.length)] : 
-                team[Math.floor(Math.random() * team.length)];
-        }
-
-        // Get random bowler from team
-        function getRandomBowler(team) {
-            const bowlers = team.filter(player => 
-                player.role === 'Bowler' || player.role === 'All-Rounder');
-            return bowlers.length > 0 ? 
-                bowlers[Math.floor(Math.random() * bowlers.length)] : 
-                team[Math.floor(Math.random() * team.length)];
-        }
-
-        // Get random dismissal type
-        function getRandomDismissal() {
-            const dismissals = [
-                'Bowled!',
-                'Caught!',
-                'LBW!',
-                'Run out!',
-                'Stumped!',
-                'Hit wicket!'
-            ];
-            return dismissals[Math.floor(Math.random() * dismissals.length)];
-        }
-
-        // Calculate overs from balls
-        function calculateOvers(balls) {
-            const overs = Math.floor(balls / 6);
-            const ballsInOver = balls % 6;
-            return ballsInOver > 0 ? `${overs}.${ballsInOver}` : `${overs}`;
-        }
-
-        // Add commentary
-        function addCommentary(text) {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            currentMatch.commentary.unshift({
-                text: text,
-                time: timeString
+            const actionKey = type === 'batsman' ? 'batsmanAction' : 'bowlerAction';
+            matchRef.update({
+                [actionKey]: selectedAction,
+                lastActionTime: firebase.database.ServerValue.TIMESTAMP
             });
             
-            // Update commentary UI
-            updateCommentary();
+            selectedAction = null;
         }
-
-        // Update commentary UI
-        function updateCommentary() {
-            matchCommentary.innerHTML = '';
+        
+        // Cancel matchmaking
+        function cancelMatchmaking() {
+            if (queueRef) {
+                queueRef.remove();
+                database.ref('matchmaking/queue').off();
+            }
             
-            currentMatch.commentary.slice(0, 10).forEach(comment => {
-                const item = document.createElement('div');
-                item.className = 'commentary-item';
-                item.innerHTML = `
-                    <div class="commentary-text">${comment.text}</div>
-                    <div class="commentary-time">${comment.time}</div>
-                `;
-                matchCommentary.appendChild(item);
+            if (matchmakingTimeout) {
+                clearTimeout(matchmakingTimeout);
+            }
+            
+            gameScreen.style.display = 'block';
+            matchmakingScreen.style.display = 'none';
+            matchmakingProgress.style.width = '0%';
+            countdownElement.style.display = 'none';
+        }
+        
+        // Update match UI
+        function updateMatchUI() {
+            if (!matchState) return;
+            
+            const isPlayer1Batting = matchState.battingTeam === 'player1';
+            const battingTeamName = isPlayer1Batting ? 
+                (matchState.player1 === currentUser.uid ? 'Your Team' : 'Opponent Team') : 
+                (matchState.player2 === currentUser.uid ? 'Your Team' : 'Opponent Team');
+                
+            const bowlingTeamName = !isPlayer1Batting ? 
+                (matchState.player1 === currentUser.uid ? 'Your Team' : 'Opponent Team') : 
+                (matchState.player2 === currentUser.uid ? 'Your Team' : 'Opponent Team');
+            
+            document.getElementById('team1Name').textContent = battingTeamName;
+            document.getElementById('team2Name').textContent = bowlingTeamName;
+            
+            const battingScore = isPlayer1Batting ? matchState.score.team1 : matchState.score.team2;
+            const bowlingScore = isPlayer1Batting ? matchState.score.team2 : matchState.score.team1;
+            
+            document.getElementById('totalRuns').textContent = `${battingScore.runs}/${battingScore.wickets}`;
+            document.getElementById('totalOvers').textContent = `${Math.floor(battingScore.overs)}.${battingScore.balls} overs`;
+            
+            // Update commentary
+            const commentaryElement = document.getElementById('commentary');
+            commentaryElement.innerHTML = '';
+            
+            matchState.commentary.slice(-5).forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'commentary-item';
+                commentElement.textContent = comment;
+                commentaryElement.appendChild(commentElement);
             });
         }
-
-        // Update scoreboard
-        function updateScoreboard() {
-            if (currentMatch.currentInnings === 1) {
-                if (currentMatch.battingFirst === 'user') {
-                    userTeamScore.textContent = `${currentMatch.userScore.runs}/${currentMatch.userScore.wickets}`;
-                    userTeamOvers.textContent = `(${currentMatch.userScore.overs} ov)`;
-                } else {
-                    opponentTeamScore.textContent = `${currentMatch.opponentScore.runs}/${currentMatch.opponentScore.wickets}`;
-                    opponentTeamOvers.textContent = `(${currentMatch.opponentScore.overs} ov)`;
-                }
-            } else {
-                if (currentMatch.battingFirst === 'user') {
-                    opponentTeamScore.textContent = `${currentMatch.opponentScore.runs}/${currentMatch.opponentScore.wickets}`;
-                    opponentTeamOvers.textContent = `(${currentMatch.opponentScore.overs} ov)`;
-                } else {
-                    userTeamScore.textContent = `${currentMatch.userScore.runs}/${currentMatch.userScore.wickets}`;
-                    userTeamOvers.textContent = `(${currentMatch.userScore.overs} ov)`;
-                }
-            }
-        }
-
-        // Check if innings should end
-        function checkInningsEnd() {
-            // Check if all wickets fallen (10 wickets)
-            const battingTeamWickets = currentMatch.currentInnings === 1 ?
-                (currentMatch.battingFirst === 'user' ? currentMatch.userScore.wickets : currentMatch.opponentScore.wickets) :
-                (currentMatch.battingFirst === 'user' ? currentMatch.opponentScore.wickets : currentMatch.userScore.wickets);
-            
-            if (battingTeamWickets >= 10) {
-                endInnings();
-                return;
+        
+        // End match
+        function endMatch(match) {
+            if (matchRef) {
+                matchRef.off();
+                matchRef = null;
             }
             
-            // Check if all balls bowled
-            if (currentMatch.ballsRemaining <= 0) {
-                endInnings();
-                return;
-            }
-            
-            // Check if target chased (for 2nd innings)
-            if (currentMatch.currentInnings === 2) {
-                const target = currentMatch.firstInningsScore + 1;
-                const currentRuns = currentMatch.battingFirst === 'user' ? 
-                    currentMatch.opponentScore.runs : currentMatch.userScore.runs;
-                
-                if (currentRuns >= target) {
-                    endInnings();
-                    return;
-                }
-            }
-            
-            // Continue with next ball
-            setTimeout(() => {
-                if (currentMatch.battingFirst === (currentMatch.currentInnings === 1 ? 'user' : 'opponent')) {
-                    // User is batting - show shot selection
-                    setupBattingActions();
-                } else {
-                    // User is bowling - show ball type selection
-                    setupBowlingActions();
-                }
-                
-                startBallTimer();
-            }, 1500);
-        }
-
-        // End current innings
-        function endInnings() {
-            if (currentMatch.currentInnings === 1) {
-                // Record first innings score
-                currentMatch.firstInningsScore = currentMatch.battingFirst === 'user' ? 
-                    currentMatch.userScore.runs : currentMatch.opponentScore.runs;
-                
-                // Start second innings
-                currentMatch.currentInnings = 2;
-                currentMatch.ballsRemaining = 120; // Reset for second innings
-                
-                addCommentary(`Innings break! ${currentMatch.battingFirst === 'user' ? 'Your team' : 'Bot Opponent'} scored ${currentMatch.firstInningsScore} runs.`);
-                matchStatus.textContent = `Innings break - Target: ${currentMatch.firstInningsScore + 1} runs`;
-                
-                // Brief delay before second innings
-                setTimeout(() => {
-                    beginInnings();
-                }, 3000);
-            } else {
-                // Match complete
-                endMatch();
-            }
-        }
-
-        // End match and show result
-        function endMatch() {
-            currentMatch.status = 'completed';
-            
-            const userTotal = currentMatch.battingFirst === 'user' ? 
-                currentMatch.userScore.runs : currentMatch.opponentScore.runs;
-            const opponentTotal = currentMatch.battingFirst === 'user' ? 
-                currentMatch.opponentScore.runs : currentMatch.userScore.runs;
-            
-            let result;
-            let userWon = false;
-            
-            if (userTotal > opponentTotal) {
-                result = `You won by ${userTotal - opponentTotal} runs!`;
-                userWon = true;
-            } else if (opponentTotal > userTotal) {
-                result = `You lost by ${opponentTotal - userTotal} runs`;
-            } else {
-                result = 'Match tied!';
-            }
-            
-            addCommentary(`Match over! ${result}`);
-            matchStatus.textContent = result;
-            matchActions.style.display = 'none';
-            matchTimer.textContent = 'Match completed';
+            gameplayScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
             
             // Update user stats
-            const updates = {
-                matchesPlayed: userData.matchesPlayed + 1,
-                highestScore: Math.max(userData.highestScore, userTotal)
-            };
+            const player1Won = match.score.team1.runs > match.score.team2.runs;
+            const isPlayer1 = match.player1 === currentUser.uid;
             
-            if (userWon) {
-                updates.matchesWon = userData.matchesWon + 1;
-                updates.diamonds = userData.diamonds + 50; // Reward for winning
+            if ((player1Won && isPlayer1) || (!player1Won && !isPlayer1)) {
+                userData.wins++;
+                userData.rating += 20;
+                showNotification('You won the match! +20 rating', 'success');
+            } else {
+                userData.losses++;
+                userData.rating = Math.max(0, userData.rating - 10);
+                showNotification('You lost the match. -10 rating', 'error');
             }
             
-            database.ref('users/' + currentUser.uid).update(updates).then(() => {
-                // Show continue button
-                const continueBtn = document.createElement('button');
-                continueBtn.className = 'btn btn-primary';
-                continueBtn.textContent = 'Continue';
-                continueBtn.style.marginTop = '20px';
-                continueBtn.style.width = '100%';
-                continueBtn.addEventListener('click', () => {
-                    showPage('dashboard');
+            // Save to Firestore
+            if (currentUser) {
+                firestore.collection('users').doc(currentUser.uid).update({
+                    wins: userData.wins,
+                    losses: userData.losses,
+                    rating: userData.rating
                 });
-                
-                const commentaryContainer = document.querySelector('.match-commentary');
-                commentaryContainer.appendChild(continueBtn);
-            });
-        }
-
-        // Load all game data
-        function loadGameData() {
-            loadAllPlayers();
-            loadLeaderboard();
-            loadEvents();
-            loadNotifications();
-            
-            // Request notification permission
-            if (Notification.permission !== 'granted') {
-                Notification.requestPermission();
             }
+            
+            updateUI();
         }
-
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notification.className = `notification ${type}`;
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
         // Initialize the game when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initGame);
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
